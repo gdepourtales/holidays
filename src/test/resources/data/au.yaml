@@ -1,0 +1,111 @@
+# Australian holiday definitions for the Ruby Holiday gem.
+# Updated: 2008-11-29.
+# Sources:  
+# - http://en.wikipedia.org/wiki/Australian_public_holidays
+# - http://www.docep.wa.gov.au/lr/LabourRelations/Content/Wages%20and%20Conditions/Public%20Holidays/Public_Holidays.html
+# - http://www.wst.tas.gov.au/employment_info/public_holidays
+# TODO: missing some regional holidays
+--- 
+months:
+  0: 
+  - name: Good Friday
+    regions: [au]
+    function: easter(year)-2
+  - name: Easter Saturday
+    regions: [au]
+    function: easter(year)-1
+  - name: Easter Monday
+    regions: [au]
+    function: easter(year)+1
+  - name: Easter Monday
+    regions: [au_tas]
+    function: easter(year)+2
+  1: 
+  - name: New Year's Day
+    regions: [au]
+    mday: 1
+  - name: Australia Day
+    regions: [au]
+    mday: 26
+  3: 
+  - name: Labour Day
+    regions: [au_wa]
+    week: 1
+    wday: 1
+  - name: Eight Hours Day
+    regions: [au_tas]
+    week: 2
+    wday: 1
+  - name: Labour Day
+    regions: [au_vic]
+    week: 2
+    wday: 1
+  4: 
+  - name: ANZAC Day
+    regions: [au]
+    mday: 25
+  5: 
+  - name: Labour Day
+    regions: [au_qld]
+    week: 1
+    wday: 1
+  - name: May Day
+    regions: [au_nt]
+    week: 1
+    wday: 1
+  6: 
+  - name: Foundation Day
+    regions: [au_wa]
+    week: 1
+    wday: 1
+  - name: Queen's Birthday
+    regions: [au_act, au_nsw, au_sa, au_tas, au_nt, au_qld, au_vic]
+    week: 2
+    wday: 1
+  - name: Queensland Day
+    regions: [au_qld]
+    mday: 6
+    type: informal
+  8:
+  - name: Ekka
+    regions: [au_qld_brisbane]
+    week: -3
+    wday: 3
+  10: 
+  - name: Labour Day
+    regions: [au_act, au_nsw, au_sa]
+    week: 1
+    wday: 1
+  12: 
+  - name: Christmas Day
+    regions: [au]
+    mday: 25
+  - name: Boxing Day
+    regions: [au]
+    mday: 26
+tests: |
+    {Date.civil(2007,1,1) => 'New Year\'s Day', 
+     Date.civil(2007,1,26) => 'Australia Day', 
+     Date.civil(2007,4,6) => 'Good Friday',
+     Date.civil(2007,4,9) => 'Easter Monday',
+     Date.civil(2007,4,25) => 'ANZAC Day',
+     Date.civil(2007,12,25) => 'Christmas Day',
+     Date.civil(2007,12,26) => 'Boxing Day'}.each do |date, name|
+      assert_equal name, (Holidays.on(date, :au, :informal)[0] || {})[:name]
+    end
+
+    [:au_sa, :au_act, :au_nsw, :au_].each do |r|
+      assert_equal 'Labour Day', Date.civil(2007,10,1).holidays(r)[0][:name]
+    end
+
+    [:au_sa, :au_act, :au_nsw, :au_vic, :au_tas, :au_qld, :au_nt, :au_].each do |r|
+      assert_equal 'Queen\'s Birthday', Date.civil(2007,6,11).holidays(r)[0][:name]
+    end
+
+    assert_equal 'Labour Day', Date.civil(2007,3,5).holidays(:au_wa)[0][:name]
+    assert_equal 'Labour Day', Date.civil(2007,3,12).holidays(:au_vic)[0][:name]
+    assert_equal 'Labour Day', Date.civil(2007,5,7).holidays(:au_qld)[0][:name]
+
+    assert_equal 'May Day', Date.civil(2007,5,7).holidays(:au_nt)[0][:name]
+    
+    assert_equal 'Eight Hours Day', Date.civil(2007,3,12).holidays(:au_tas)[0][:name]

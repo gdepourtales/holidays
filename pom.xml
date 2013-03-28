@@ -1,0 +1,111 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>ch.gadp</groupId>
+    <artifactId>holidays</artifactId>
+    <version>1.0</version>
+    <packaging>jar</packaging>
+
+    <name>holidays</name>
+    <url>http://maven.apache.org</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+
+
+        <dependency>
+            <groupId>org.jruby</groupId>
+            <artifactId>jruby-complete</artifactId>
+            <version>1.7.3</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>${project.basedir}/target/generated-sources/resources</directory>
+            </resource>
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+                <includes>
+                    <include>**/*.rb</include>
+                </includes>
+            </resource>
+
+        </resources>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <target>
+
+                                <fileset id="my-fileset" dir="src/main/resources/ch/gadp/holidays/holidays">
+                                    <include name="*.rb" />
+                                </fileset>
+                                <pathconvert targetos="unix" pathsep=","
+                                             property="holidaydefs-file" refid="my-fileset">
+                                    <map from="${project.basedir}/src/main/resources/ch/gadp/holidays/holidays" to="holidays" />
+                                </pathconvert>
+                                <echo file="${project.basedir}/target/generated-sources/resources/ch/gadp/holidays/holidaydefs">${holidaydefs-file}</echo>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9</version>
+                <configuration>
+                    <outputDirectory>${project.basedir}/apidocs</outputDirectory>
+                    <reportOutputDirectory>${project.basedir}/apidocs</reportOutputDirectory>
+                    <bottom><![CDATA[Copyright (C) 2013  Guy de Pourtalès]]> </bottom>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+
+</project>
